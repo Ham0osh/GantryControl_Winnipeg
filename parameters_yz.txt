@@ -1,0 +1,6 @@
+y_init = 0  # initial y (mm)
+y_final = 600 # final y (mm) -- careful to test before that target wont hit wall
+N_y = 20
+z_init = 100    # minimuz z to start(mm)
+z_final = 600 # maximum z to finish(mm)
+N_z = 10
