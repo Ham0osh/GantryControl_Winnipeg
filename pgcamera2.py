@@ -155,15 +155,15 @@ def get_camera_ports():
     camports = []
     #print('get_camera_ports result=',result)
     for line in lines:  
-        #print('line=',line)
+        print('line=',line)
         words = line.split(' ')
-        if words[0] != 'Sony':
-            continue
-        words = line.split(':')
-        camname = words[0][:-6].strip(' ')
-        camport = 'usb:'+words[1].strip(' ')
-        serno = get_camera_serialno( camport )
-        camports.append( [serno, camport, camname] )
+        if words[0] == 'Sony' or (words[0] == 'USB' and words[1] == 'PTP'):
+            words = line.split(':')
+            camname = words[0][:-6].strip(' ')
+            camport = 'usb:'+words[1].strip(' ')
+            serno = get_camera_serialno( camport )
+            camports.append( [serno, camport, camname] )
+
     return camports
 
 def get_camera_serialno( usbport ):
