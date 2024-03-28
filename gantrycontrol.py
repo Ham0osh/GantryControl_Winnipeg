@@ -162,7 +162,7 @@ class gantrycontrol:
     y=round(y/0.009382)
     z=round(z/0.009355)
     phi=round(phi/0.0226)
-    theta=round(theta/0.02259)
+    theta=-round(theta*1000/180.)#old value = round(theta/0.02259)
     
     return x,y,z,phi,theta
 
@@ -172,7 +172,7 @@ class gantrycontrol:
     y = 0.009382*cury
     z = 0.009355*curz
     phi = 0.0226*curphi
-    theta = 0.02259*curtheta
+    theta = -(180./1000)*curtheta#old value = 0.02259*curtheta
     
     return x,y,z,phi,theta
 
@@ -204,25 +204,20 @@ class gantrycontrol:
     print('current (x,y,z,phi,theta) (counts)=',curx,cury,curz,curphi,curtheta )
 
 
-  #Returns axes whose position is changed.
-  #only used for for absolute move command(not relative)
-  #Absolute move has issues when you begin axes whose position is not changed.
-  #Probably better to only use relative move.
-  def axes_to_begin(self,x,y,z,phi,theta):
-    res = self.c('PA ?,?,?,?,?')
-    curx,cury,curz,curphi,curtheta = res.split(',')
-    curx = float(curx)
-    cury = float(cury)
-    curz = float(curz)
-    curtheta = float(curtheta)
-    curphi = float(curphi)
+  #Don't send move command if the position hasn't changed. I.e, current position is same as the position we want to move to. Controller gives a error if we do that.
+  def axes_to_begin(self,dx,dy,dz,dphi,dtheta):
+    axes="" # axes to move 
+    if dx!=0:
+        axes=axes+"A"
+    if dy!=0:
+        axes=axes+"B"
+    if dz!=0:
+        axes=axes+"C"
+    if dphi!=0:
+        axes=axes+"D"
+    if dtheta!=0:
+        axes=axes+"E"
 
-    axes=''
-    axes='A' if (x!=curx) else axes
-    axes=axes+'B' if (y!=cury) else axes
-    axes=axes+'C' if (z!=curz) else axes
-    axes=axes+'D' if (phi!=curphi) else axes
-    axes=axes+'E' if (theta!=curtheta) else axes
     return axes
 
 
@@ -254,9 +249,6 @@ class gantrycontrol:
         print("inside ph")
         phi=curphi
 
-      # converting mm to counts
-      c_x,c_y,c_z,c_phi,c_theta = self.convert(x,y,z,phi,theta)
-
       #setting up speed
       command = 'SP %g,%g,%g,%g,%g'% (spx,spy,spz,spphi,sptheta)
       print('SPEED COMMAND : ',command)
@@ -264,15 +256,19 @@ class gantrycontrol:
 
       print('current speed', self.c('SP ?,?,?,?,?'))
 
+      #Only begin the axes whose Absolute position has changed
+      axes = self.axes_to_begin(x-curx,y-cury,z-curz,phi-curphi,theta-curtheta) #This check is not necessary if someone doesn't set speed of some axis to 0 by accident.
 
+      # converting mm to counts
+      x,y,z,phi,theta = self.convert(x,y,z,phi,theta)
+      z=-z #convert to right handed coordinate system.
+      theta=-theta
       #Sending absolute move command
-      command = 'PA %g,%g,%g,%g,%g'% (c_x,c_y,c_z,c_phi,c_theta)
+      command = 'PA %g,%g,%g,%g,%g'% (x,y,z,phi,theta)
       print('try running in move: ',command)
       self.c( command )
 
 
-      #Only begin the axes whose Absolute position has changed
-      axes = self.axes_to_begin(c_x,c_y,c_z,c_phi,c_theta) #This check is not necessary if someone doesn't set speed of some axis to 0 by accident.
       print('axes = '+axes)
       if len(axes)>0:
         self.c('BG'+axes) # Begin only if there is any axes to begin
@@ -288,11 +284,11 @@ class gantrycontrol:
       print(self.c('TE'))
       
 
-  #move x(counts) relative to current position
+  #Relative move. Units (mm)
   def move_rel(self,x=0,y=0,z=0,phi=0,theta=0,spx=1000,spy=1000,spz=1000,spphi=250,sptheta=250):
     '''
     move relative distance x,y,z,phi,theta from current location
-    distances are in motor steps
+    distances are in mm
     saves position to file after moving
     '''
     try:
@@ -302,24 +298,16 @@ class gantrycontrol:
 
       self.print_cur_pos()
 
+      
+      axes = self.axes_to_begin(x,y,z,phi,theta) 
+      x,y,z,phi,theta = self.convert(x,y,z,phi,theta) #convert mm to counts
+      z=-z #convert to right handed coordinate system.
+      theta=-theta
       command = 'PR %g,%g,%g,%g,%g'% (x,y,z,phi,theta)
       print('try running: ',command)
       self.c( command )
+
       
-      #Controller gives an error if the limit switch is activated, even if we are not moving that axis
-      #So specifying the axis to move would get rid of that problem
-      axes="" # axes to move 
-      if x!=0:
-          axes=axes+"A"
-      if y!=0:
-          axes=axes+"B"
-      if z!=0:
-          axes=axes+"C"
-      if phi!=0:
-          axes=axes+"D"
-      if theta!=0:
-          axes=axes+"E"
-     
       if len(axes)>0:  
         self.c('BG'+axes)
         self.g.GMotionComplete('ABCDE')
@@ -336,9 +324,3 @@ class gantrycontrol:
       self.c('TE')
      
 
-  # move x(mm) relative to current position
-  def move_rel_mm(self,x=0,y=0,z=0,phi=0,theta=0,spx=1000,spy=1000,spz=1000,spphi=250,sptheta=250):
-    self.print_cur_pos_mm()
-    x,y,z,phi,theta = self.convert(x,y,z,phi,theta)
-    self.move_rel(x,y,z,phi,theta,spx,spy,spz,spphi,sptheta)
-    self.print_cur_pos_mm()

@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #*****************************************************************************************#
 #  This Program moves the Gantry in a portion of a sphere around the camera. 
 #  For this the camera parameters should be defined in parameters_sphere.txt file. 
@@ -136,6 +137,9 @@ def plot_scan( c1, gsets, tls, label ):
     ax.set_title('Target position and pointing')
     #plt.tight_layout()
     plt.savefig('gantrypospnt_'+label+'.png')
+    print('min Gx=',np.min(GX),' max Gx=',np.max(GX))
+    print('min Gy=',np.min(GY),' max Gy=',np.max(GY))
+    print('min Gz=',np.min(GZ),' max Gz=',np.max(GZ))
     
     
     
@@ -143,10 +147,14 @@ def plot_scan( c1, gsets, tls, label ):
 def main():
     parser = argparse.ArgumentParser( description='scan_spherical options' )
     parser.add_argument('-p','--param_file',default='parameters_sphere.txt', help='Parameter file')
-    parser.add_argument('-d','--dry_run',default=True,help='Do dry run, printing scan locations only',type=bool )
+    parser.add_argument('--dryrun',help='Do dry run, printing scan locations only',action='store_true')
+    parser.add_argument('--no-dryrun',dest='dryrun',action='store_false')
+    parser.set_defaults(dryrun=True)
     parser.add_argument('-c','--camera',default=[],help='Camera number(s) to take images',action='append',nargs='+')
     parser.add_argument('-l','--label',default='',help='Label to include in image names',type=str)
-    parser.add_argument('-r','--rayfin',default=False,help='Rayfin camera only')
+    parser.add_argument('--rayfin',default=True,help='Rayfin camera only',action='store_true')
+    parser.add_argument('--no-rayfin',dest='rayfin',action='store_false')
+    parser.set_defaults(rayfin=False)
     
     args = parser.parse_args()
     print(args)
@@ -156,24 +164,40 @@ def main():
     scanpts = cam.get_scanpoints( param.Nscan, param.Rscan, param.phimin, param.phimax, param.thetamin, param.thetamax  )
     gsets, tls = get_gantry_settings( cam, scanpts )
 
-    if args.dry_run == True:
+
+    print('Rayfin=',args.rayfin)
+    if args.rayfin == True:
+        print('Taking photos with Rayfin')
+
+    print('Dryrun=',args.dryrun)
+    if args.dryrun == True:
         print('Dry Run')
-        plot_scan( cam, gsets, tls, args.label )
+        print('gsets=')
         print( gsets )
+        print('tls=')
+        print(tls)
+        plot_scan( cam, gsets, tls, args.label )
         return 0
 
+
     pgc=pg.pgcamera2()
+    gantry.locate_home_xyz();
     for n,gset in enumerate(gsets):
         print('move',n,'to',gset)
         curx, cury, curz, curphi, curtheta = gset
+        curphi*=rad2deg
+        curtheta*=-rad2deg
+        
         gantry.move( "DM", "DM", curz )
         gantry.move( curx, cury,"DM",curphi,curtheta,1000,1000,1000,200,200)
         time.sleep(1)
+        
         #capturing image(s) here
         if args.rayfin == True:
             capture_command = ['ssh','jamieson@hyperk.uwinnipeg.ca','python /home/jamieson/HyperK_Summer_Photogrammetry/RayfinRelated/RayfinTCP_takepicture.py -i 192.168.0.102 -l 192.168.0.100 -p 8888' ]
             print(capture_command)
             capture=subprocess.run( capture_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=10 )
+            time.sleep(5)
 
         else:
             for icam in args.camera[0]:

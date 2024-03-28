@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 ######## Program to set the origin for phi and theta axes. ###########
 ######## Just answer the questions the program asks        ###########
 
@@ -17,7 +18,7 @@ while phi_not_done:
 		phi_not_done=False
 	elif(key.lower()=='n'):
 		angle=float(input("what angle(degree) do you want to rotate phi by? \n"))
-		gantry.move_rel_mm(0,0,0,angle,0,1000,1000,1000,100,100)
+		gantry.move_rel(0,0,0,angle,0,1000,1000,1000,250,100)
 
 print("Awesome! Let's fix theta now.")
 
@@ -29,7 +30,7 @@ while theta_not_done:
 		theta_not_done=False
 	elif(key.lower()=='n'):
 		angle=float(input("what angle(degree) do you want to rotate theta by? \n"))
-		gantry.move_rel_mm(0,0,0,0,angle,1000,1000,1000,100,100)
+		gantry.move_rel(0,0,0,0,angle,1000,1000,1000,250,100)
 
 gantry.set_theta_phi_origin()
 

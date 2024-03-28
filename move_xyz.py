@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 ######## Program to move x,y,z axes by desired mm. ###########
 ######## Just answer the questions the program asks        ###########
 
@@ -16,11 +17,11 @@ while run:
   axis=input("Which axis do you want to move(x,y,z) ? \n")
   value=float(input("By how much(mm) do you want to move "+axis+ " axis? \n"))
   if axis.lower()=='x':
-    gantry.move_rel_mm(value)
+    gantry.move_rel(value)
   elif axis.lower()=='y':
-    gantry.move_rel_mm(0,value)
+    gantry.move_rel(0,value)
   elif axis.lower()=='z':
-    gantry.move_rel_mm(0,0,value)
+    gantry.move_rel(0,0,value)
 
   done=input("Are you done (Y/N)? \n")
   if done.lower()=="y":  
