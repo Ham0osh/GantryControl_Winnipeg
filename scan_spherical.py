@@ -168,7 +168,11 @@ def main():
     print('Rayfin=',args.rayfin)
     if args.rayfin == True:
         print('Taking photos with Rayfin')
-
+    else:
+        print(args.camera)
+        for icam in args.camera[0]:
+            print('Taking photos with camera:',icam)
+            
     print('Dryrun=',args.dryrun)
     if args.dryrun == True:
         print('Dry Run')
