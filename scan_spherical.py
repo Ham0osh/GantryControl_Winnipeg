@@ -140,9 +140,7 @@ def plot_scan( c1, gsets, tls, label ):
     print('min Gx=',np.min(GX),' max Gx=',np.max(GX))
     print('min Gy=',np.min(GY),' max Gy=',np.max(GY))
     print('min Gz=',np.min(GZ),' max Gz=',np.max(GZ))
-    
-    
-    
+        
 
 def main():
     parser = argparse.ArgumentParser( description='scan_spherical options' )
@@ -168,11 +166,7 @@ def main():
     print('Rayfin=',args.rayfin)
     if args.rayfin == True:
         print('Taking photos with Rayfin')
-    else:
-        print(args.camera)
-        for icam in args.camera[0]:
-            print('Taking photos with camera:',icam)
-            
+
     print('Dryrun=',args.dryrun)
     if args.dryrun == True:
         print('Dry Run')
