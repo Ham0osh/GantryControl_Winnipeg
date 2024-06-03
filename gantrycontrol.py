@@ -281,7 +281,7 @@ class gantrycontrol:
       print(e)
 
   # Relative move. Units (mm)
-  def move_rel(self, x=0, y=0, z=0, phi=0, theta=0, spx=1000, spy=1000, spz=1000, spphi=250, sptheta=250):
+  def move_rel(self, x=0., y=0., z=0., phi=0., theta=0, spx=1000, spy=1000, spz=1000, spphi=250, sptheta=250):
     '''
     move relative distance x,y,z,phi,theta from current location
     distances are in mm
