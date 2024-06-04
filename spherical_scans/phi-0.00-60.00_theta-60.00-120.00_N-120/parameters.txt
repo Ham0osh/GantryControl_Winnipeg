@@ -1,9 +1,8 @@
-#r_c is measured as the x and y distance from the limit switch to the point that makes contact with limit switch when homed. To measure x distance move the z axis above the camera and measure the distance from limit switch to the point that would make contact with the limit switch.
-r_c = 1100,700  # Position of camera (mm,mm)
-phi_init = -150 # initial angle to start (degrees) #don't change
-phi_final = 0   # final angle to finish (degrees) #don't change
-N_phi = 30      # number of stops to make in phi
-z_init =  0     # minimuz z to start(mm)
-z_final = 600   # maximum z to finish(mm)
-N_z = 6         # number of stops to make in vertical direction
-scan_rad = 500  # size of radius to move around camera
+Nscan    = 120
+Rscan    = 450.0 mm
+campos   = [900.0, 580.0, -730.0] mm
+camfacing= [0.0, -1.0, 0.0]
+phimin   = 0.0 deg
+phimax   = 59.99999999999999 deg
+thetamin = 59.99999999999999 deg
+thetamax = 119.99999999999999 deg
