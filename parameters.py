@@ -122,14 +122,14 @@ class ParametersSphere(Parameters):
             print(e)
 
     def print_parameters(self):
-        print(l1 := f"Nscan    = {self.Nscan}")
-        print(l2 := f"Rscan    = {self.Rscan} mm")
-        print(l3 := f"campos   = {self.campos} mm")
-        print(l4 := f"camfacing= {self.camfacing}")
-        print(l5 := f"phimin   = {rad2deg * self.phimin} deg")
-        print(l6 := f"phimax   = {rad2deg * self.phimax} deg")
-        print(l7 := f"thetamin = {rad2deg * self.thetamin} deg")
-        print(l8 := f"thetamax = {rad2deg * self.thetamax} deg")
+        print(l1 := f"Nscan     = {int(self.Nscan)}")
+        print(l2 := f"Rscan     = {self.Rscan}", "mm")
+        print(l3 := f"campos    = {', '.join([str(_) for _ in self.campos])}", "mm")
+        print(l4 := f"camfacing = {', '.join([str(_) for _ in self.camfacing])}", "mm")
+        print(l5 := f"phimin    = {rad2deg * self.phimin:.5f}", "deg")
+        print(l6 := f"phimax    = {rad2deg * self.phimax:.5f}", "deg")
+        print(l7 := f"thetamin  = {rad2deg * self.thetamin:.5f}", "deg")
+        print(l8 := f"thetamax  = {rad2deg * self.thetamax:.5f}", "deg")
         return [l1, l2, l3, l4, l5, l6, l7, l8]
 
 
