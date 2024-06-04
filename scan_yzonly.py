@@ -83,8 +83,8 @@ class Parameters:
         print("N_z = ", self.nz)
 
 
+# Initialize objects
 param = Parameters()
-
 gantry = gc.gantrycontrol()
 
 # zero the gantry; Moves the gantry to home(where all limit switches are)

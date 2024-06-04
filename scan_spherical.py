@@ -15,7 +15,7 @@ from gantry_spherical_scan import get_gantry_settings
 import pgcamera2 as pg
 import time
 import subprocess
-import numpy as np
+import numpy as np  # type: ignore
 import argparse
 import sys
 import matplotlib.pyplot as plt

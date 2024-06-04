@@ -26,7 +26,6 @@ import time
 import math
 import subprocess
 import numpy as np
-import math
 
 
 # loading parameters for the scan from parameters.txt file
