@@ -229,7 +229,7 @@ class gantrycontrol:
     try:
       # check if we don't want to move some axis
       curx, cury, curz, curtheta, curphi = self.get_cur_pos_mm()
-      # "DP" means don't move that axis.
+      # "DM" means don't move that axis.
       if str(x).lower() == "dm":
         x = curx
         print("inside x")
