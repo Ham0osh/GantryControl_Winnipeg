@@ -1,7 +1,7 @@
 Nscan    = 120
 Rscan    = 450.0 mm
 campos   = [900.0, 580.0, -730.0] mm
-camfacing= [0.0, -1.0, 0.0]
+camfacing= [0.0, -220, 0.0]
 phimin   = 0.0 deg
 phimax   = 59.99999999999999 deg
 thetamin = 59.99999999999999 deg

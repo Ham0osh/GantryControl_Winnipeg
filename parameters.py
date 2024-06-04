@@ -24,7 +24,7 @@ class Parameters:
 
     def export_parameters(self, outfilename: str = 'tmp_parameters.txt'):
         lines = self.print_parameters()
-        with open(outfilename, "r+") as savefile:
+        with open(outfilename, "w+") as savefile:
             # convert to string:
             _ = savefile.read()
             savefile.seek(0)
