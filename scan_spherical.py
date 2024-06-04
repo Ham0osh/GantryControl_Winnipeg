@@ -1,12 +1,12 @@
 #!/usr/bin/env python
-# *****************************************************************************************#
+# %*****************************************************************************************#
 #  This Program moves the Gantry in a portion of a sphere around the camera.
 #  For this the camera parameters should be defined in parameters_sphere.txt file.
 #  The camera location in tank is represented by r_c
 #  and is measured in mm.
 #
 #  Coordinate system definition is defined in gantry_spherical_scan.py.
-# *******************************************************************************************
+# %*******************************************************************************************
 
 # from datetime import datetime
 import gantrycontrol as gc
@@ -110,8 +110,8 @@ def plot_scan(c1, gsets, tls, label):
     GX = npgsets.T[0]
     GY = npgsets.T[1]
     GZ = npgsets.T[2]
-    Gphi = npgsets.T[3]
-    Gtheta = npgsets.T[4]
+    Gphi = npgsets.T[3]  # type: ignore
+    Gtheta = npgsets.T[4]  # type: ignore
     nptls = np.array(tls)
     TX = nptls.T[0]
     TY = nptls.T[1]
@@ -126,7 +126,7 @@ def plot_scan(c1, gsets, tls, label):
     ax.scatter(c1.rc[0], c1.rc[1], c1.rc[2], marker="o")
     ax.set_xlabel("xg (mm)")
     ax.set_ylabel("yg (mm)")
-    ax.set_zlabel("zg (mm)")
+    ax.set_zlabel("zg (mm)")  # type: ignore
     ax.set_title("Gantry position")
     # plt.tight_layout()
     plt.savefig("gantrypos_" + label + ".png")
@@ -136,7 +136,7 @@ def plot_scan(c1, gsets, tls, label):
     ax.scatter(c1.rc[0], c1.rc[1], c1.rc[2], marker="o")
     ax.set_xlabel("xg+xt (mm)")
     ax.set_ylabel("yg+yt (mm)")
-    ax.set_zlabel("zg+zt (mm)")
+    ax.set_zlabel("zg+zt (mm)")  # type: ignore
     ax.set_title("Target position and pointing")
     # plt.tight_layout()
     plt.savefig("gantrypospnt_" + label + ".png")
@@ -221,7 +221,7 @@ def main():
                 "python /home/jamieson/HyperK_Summer_Photogrammetry/RayfinRelated/RayfinTCP_takepicture.py -i 192.168.0.102 -l 192.168.0.100 -p 8888",
             ]
             print(capture_command)
-            capture = subprocess.run(
+            capture = subprocess.run(  
                 capture_command,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
@@ -232,10 +232,7 @@ def main():
         else:
             for icam in args.camera[0]:
                 label = (
-                    str(n) + "pch" + icam + "_" + args.label
-                    + "_z" + str(round(curz, 1))
-                    + "_y" + str(round(cury, 1))
-                    + "_x" + str(round(curx, 1))
+                    str(n) + "pch" + icam + "_" + args.label + "_z" + str(round(curz, 1)) + "_y" + str(round(cury, 1)) + "_x" + str(round(curx, 1))
                 )
                 print(label)
                 pgc.capture_image(int(icam), dir="", label=label, append_date=False)

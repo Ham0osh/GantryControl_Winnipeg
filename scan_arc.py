@@ -1,8 +1,8 @@
-# *************************************************************************************************#
+# %*************************************************************************************************#
 #  This Program moves the Gantry in an arc around the camera. For this the camera parameters      #
 #  Should be defined in parameters.txt file. The camera location in tank is represented by r_c    #
 #  and is measured in mm. In Parameters the Phi angle has zero on -Y axis.                        #
-# *************************************************************************************************#
+# %*************************************************************************************************#
 
 # Arc scan
 #        -----------
@@ -129,7 +129,7 @@ for i in range(param.nz):
     # Moving Gantry here
     curz = zmin + zstep * i
     # 	_,_,curz,_,_ = gantry.unconvert( 1, 1, curz, 1, 1)
-    gantry.move("DM", "DM", curz)
+    gantry.move("DM", "DM", curz)  # type: ignore
     for j in range(param.nphi):
         t1 = datetime.now()  # initial time
         print("Picture no: ", n)
@@ -147,26 +147,20 @@ for i in range(param.nz):
         print("rx, ry = ", r[0], " ", r[1])
         print("phi_prime = ", phi_prime)
 
-        gantry.move(r_t[0], r_t[1], "DM", phi_t, 0, 1000, 1000, 100, 100)
+        gantry.move(r_t[0], r_t[1], "DM", phi_t, 0, 1000, 1000, 100, 100)  # type: ignore
         time.sleep(1)
         cur_phi = cur_phi + phistep
 
         # capturing image here
         label = (
-            str(n)
-            + "_pch4air1_z"
-            + str(round(curz, 1))
-            + "_y"
-            + str(round(r_t[1], 1))
-            + "_x"
-            + str(round(r_t[0], 1))
+            str(n) + "_pch4air1_z" + str(round(curz, 1)) + "_y" + str(round(r_t[1], 1)) + "_x" + str(round(r_t[0], 1))
         )
         print(label)
         pgc = pg.pgcamera2()
         pgc.capture_image(4, dir="", label=label, append_date=False)
 
         label = (
-            str(n) + "_pch7air1_z" + str(round(curz, 1)) + "_y" + str(round(cury, 1))
+            str(n) + "_pch7air1_z" + str(round(curz, 1)) + "_y" + str(round(cury, 1))  # type: ignore  #! UNDEFINED 'cury'
         )
         print(label)
         pgc.capture_image(7, dir="", label=label, append_date=False)

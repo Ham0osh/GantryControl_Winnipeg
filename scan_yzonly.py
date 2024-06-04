@@ -10,9 +10,7 @@ import gantrycontrol as gc
 import pgcamera2 as pg
 
 import time
-import math
 import subprocess
-import numpy as np
 
 
 # loading parameters for the scan from parameters.txt file
@@ -108,7 +106,7 @@ for i in range(param.nz):
     curz = zmin + zstep * i
     print("curz=", curz)
     # 	_,_,curz,_,_ = gantry.unconvert( 1, 1, curz, 1, 1)
-    gantry.move("DM", "DM", curz)
+    gantry.move("DM", "DM", curz)  # type: ignore
     for j in range(param.ny):
         t1 = datetime.now()  # initial time
         print("Picture no: ", n)
@@ -116,24 +114,18 @@ for i in range(param.nz):
         cury += ystep
         print("z=", curz, " y =", cury)
         label = (
-            str(n)
-            + "_pch7_air_r1c_z" + str(round(curz, 1))
-            + "_y" + str(round(cury, 1))
+            str(n) + "_pch7_air_r1c_z" + str(round(curz, 1)) + "_y" + str(round(cury, 1))
         )
         print(label)
 
-        gantry.move("DM", cury, curz, "DM", "DM", 1000, 1000, 1000, 100, 100)
+        gantry.move("DM", cury, curz, "DM", "DM", 1000, 1000, 1000, 100, 100)  # type: ignore
         time.sleep(1)
 
         pgc = pg.pgcamera2()
         pgc.capture_image(7, dir="", label=label, append_date=False)
 
         label = (
-            str(n)
-            + "_pch4_air_r1c_z"
-            + str(round(curz, 1))
-            + "_y"
-            + str(round(cury, 1))
+            str(n) + "_pch4_air_r1c_z" + str(round(curz, 1)) + "_y" + str(round(cury, 1))
         )
         print(label)
         pgc.capture_image(4, dir="", label=label, append_date=False)
