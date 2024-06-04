@@ -1,6 +1,6 @@
 version: "1"
 rules:
-  - base: winnipeg
+  - base: main
     upstream: ABlairJamieson:main    # change `wei` to the owner of upstream repo
     mergeMethod: hardreset
 
