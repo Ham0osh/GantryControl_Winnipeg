@@ -1,6 +1,6 @@
 version: "1"
 rules:
-  - base: main
-    upstream: ABlairJamieson:main    # change `wei` to the owner of upstream repo
+  - base: main                       # target branch
+    upstream: ABlairJamieson:main    # owner:branch
     mergeMethod: hardreset
 
