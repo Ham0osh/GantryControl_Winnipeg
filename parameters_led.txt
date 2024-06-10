@@ -1,0 +1,9 @@
+Nscan     = 200                    # Number of scan points (approx)
+Rscan     = 450.0                  # Radius from camera to scan (mm)
+ledpos    = 0.0, 400.0, -600.0   # Camera position (mm, mm, mm)
+ledfacing = 1.0, 0.0, 0.0         # Camera facing nx, ny, nz (normalized)
+phimin    = -70.0                  # Degrees min from cam coord (x-axis right looking at cam)
+phimax    = 70.0                   # Degrees max from cam coord
+thetamin  = 20.0                   # Degrees min from z-axis (relative upward)
+thetamax  = 85.0                   # Degrees max from z-axis 
+interval  = 1			   # seconds

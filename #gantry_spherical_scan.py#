@@ -93,27 +93,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-
-# ## Now calculate position and rotation of gantry
-# 
-# Now that we have a list of camera vectors $\vec{r}$ in gantry coordinates, we want to calculate the vector $\vec{r}_g$, $\theta_g$, and $\phi_g$ (the x,y,z of the gantry and its rotation).  This position is such that:
-# 
-# $$\vec{r}_g+\vec{r}_t = \vec{r}_c + \vec{r}$$
-# 
-# $$\vec{r}_g = \vec{r}_c + \vec{r} - \vec{r}_t$$
-# 
-# The vector $\vec{r}$ and $\vec{r}_c$ we get from the camera.  The vector $\vec{r}_t$ depends on the normal vector of $-\vec{r}$ (the target facing $\hat{n_t}$).  We find:
-# 
-# $$ \hat{n_t} = -\frac{\vec{r}}{r} $$
-# $$ \phi = \rm{arctan2}( n[1] , n[0] )$$
-# $$ \theta = \rm{arcsin}\left( \sqrt{ 1 - n[2]^2 } \right)$$
-# 
-# The gantry facing is then $\phi_g=\phi$ and $\theta_g=\theta$.  The gantry target vector is:
-# 
-# $$ \vec{r}_t' = 25\ \rm{cm}\ ( \sin{\phi_g} \hat{i} + \cos{\phi_g} \hat{j} ) $$
-# 
-# 
-
 class camera:
     def __init__(self, rc, nc):
         '''
@@ -122,7 +101,8 @@ class camera:
         '''
         self.rc = rc
         self.nc = nc
-        #self.phip = np.arctan2( nc[1], nc[0] )
+        self.phip = np.arctan2( nc[1], nc[0] )
+        print('camera phi=',self.phip)
         
     def get_scanpoints( self, N, r, phi1, phi2, theta1, theta2  ):
         '''
@@ -157,81 +137,53 @@ class camera:
                 #handle raster in phi
                 if m % 2 == 1: #go down in phi
                     phi = phi2 - dphi
-
+                # rotate from camera phi to gantry phi!
+                phi += self.phip
                 rcvec =  [ r*np.sin( theta ) * np.cos(phi), 
                               r*np.sin( theta ) * np.sin(phi),
                               r*np.cos( theta ) ]
                 rvecs.append( np.array(rcvec) )
         return rvecs
 
-#helper functions
-def normalize(vector):
-    norm = np.linalg.norm(vector)
-    if norm == 0: 
-        return vector
-    return vector / norm
+# ## Now calculate position and rotation of gantry
+# 
+# Now that we have a list of camera vectors $\vec{r}$ in gantry coordinates, we want to calculate the vector $\vec{r}_g$, $\theta_g$, and $\phi_g$ (the x,y,z of the gantry and its rotation).  This position is such that:
+# 
+# $$\vec{r}_g+\vec{r}_t = \vec{r}_c + \vec{r}$$
+# 
+# $$\vec{r}_g = \vec{r}_c + \vec{r} - \vec{r}_t$$
+# 
+# The vector $\vec{r}$ and $\vec{r}_c$ we get from the camera.  The vector $\vec{r}_t$ depends on the normal vector of $-\vec{r}$ (the target facing $\hat{n_t}$).  We find:
+# 
+# $$ \hat{n_t} = -\frac{\vec{r}}{r} $$
+# $$ \phi = \rm{arctan2}( n[1] , n[0] )$$
+# $$ \theta = \rm{arcsin}\left( \sqrt{ 1 - n[2]^2 } \right)$$
+# 
+# The gantry facing is then $\phi_g=\phi$ and $\theta_g=\theta$.  The gantry target vector is:
+# 
+# $$ \vec{r}_t' = 25\ \rm{cm}\ ( \sin{\phi_g} \hat{i} + \cos{\phi_g} \hat{j} ) $$
+# 
+# 
 
-def cross_product(v1, v2):
-    return np.cross(v1, v2)
-
-#works when there is no camera roll
-#FPS game type of setup.
-#See LookAt matrix https://learnopengl.com/Getting-started/Camera. The transformation we are doing is inverse of LookAt matrix.
-#Make sure the camera Pitch doesn't exceed +-90 degrees.
-#If Pitch exceede +- 90 degrees, up should be redefined to respective upwards direction
-def transform_camera_to_gantry(coordinate, camera_position, camera_direction):
-    up = np.array([0, 0, 1])
-    
-    # Compute camera axes
-    camera_left = cross_product(up, camera_direction)  # camera y-axis
-    camera_up = cross_product(camera_direction, camera_left)  # camera z axis
-    
-    # Normalize camera axes
-    x_hat = normalize(camera_direction)
-    y_hat = normalize(camera_left)
-    z_hat = normalize(camera_up)
-    
-
-    # Rotation matrix
-    R_mat = np.array([
-        [x_hat[0], y_hat[0], z_hat[0]],
-        [x_hat[1], y_hat[1], z_hat[1]],
-        [x_hat[2], y_hat[2], z_hat[2]]
-    ])
-    
-    
-    # Translation vector
-    t_vec = np.array(camera_position)
-    
-    # Transform the coordinate
-    coordinate = np.array(coordinate)
-    transformed_coordinate = R_mat.dot(coordinate) + t_vec
-    
-    return transformed_coordinate
-
-def get_gantry_setting( r, rc,dc,len_rt ):
+def get_gantry_setting( r, rc ):
     '''
     Given desired target position r relative to the camera posiiton at rc, 
     return the gantry settings (rg,phig,thetag) and 
     the target location (rt,nt).
     '''
-    #desired target position relative to gantry coordinate
-    rg = transform_camera_to_gantry(coordinate=r, camera_position=rc, camera_direction=dc)
-    
-    nt = (rc-rg)
-    nt = nt/np.linalg.norm(nt) # target normal
-    phig = np.pi/2 + np.arctan2( -nt[1], -nt[0] )
-    thetag = np.arcsin( nt[2] )
-    
-    rthat = np.array( [ np.cos(phig), np.sin(phig), 0 ] )                                                                                     
-    rt = np.multiply(rthat, len_rt)
-    
-    gantry_pos = rg-rt
-    #print('rg=',rg,'rc=',rc,'r=',r,'rt=',rt)
-    return (gantry_pos, phig, thetag, rt,nt) 
+    rhat = r / np.linalg.norm(r)
+    nt = -rhat
+    phig = np.arctan2( nt[1], nt[0] )
+    thetag = np.arctan2( nt[2], np.sqrt( nt[0]**2+nt[1]**2 ) ) #np.arcsin( np.sqrt(1-nt[2]**2) )
+    rtdir = np.cross( rhat, np.array( [0.,0.,1.] ) )
+    rthat = rtdir / np.linalg.norm(rtdir)
+    rt = np.multiply( rthat, 250.0 )
+    rg = rc + r - rt
+    return (rg, phig, thetag, rt, nt) 
 
 
-def get_gantry_settings( cam, rvecs, len_rt ):
+
+def get_gantry_settings( cam, rvecs ):
     '''
     Given a vector of scan points in rvecs, get a list of gantry settings.
     
@@ -246,7 +198,7 @@ def get_gantry_settings( cam, rvecs, len_rt ):
     gsettings = []
     tlocs = []
     for rv in rvecs:
-        rg, phig, thetag, rt, nt = get_gantry_setting( rv, cam.rc, cam.nc, len_rt )
+        rg, phig, thetag, rt, nt = get_gantry_setting( rv, cam.rc )
         gsettings.append( [rg[0],rg[1],rg[2],phig,thetag] )
         tlocs.append( [rt[0],rt[1],rt[2],nt[0],nt[1],nt[2]] )
     return (gsettings, tlocs)
