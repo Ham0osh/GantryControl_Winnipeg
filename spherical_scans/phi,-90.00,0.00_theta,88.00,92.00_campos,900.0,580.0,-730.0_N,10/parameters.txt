@@ -1,0 +1,8 @@
+Nscan     = 10
+Rscan     = 450.0
+campos    = 900.0, 580.0, -730.0
+camfacing = 0.0, -220, 0.0
+phimin    = -90.00000
+phimax    = 0.00000
+thetamin  = 88.00000
+thetamax  = 92.00000
